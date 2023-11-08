@@ -27,6 +27,10 @@
   }
 </script>
 
+<svelte:head>
+    <title>Daily Checklist</title>
+</svelte:head>
+
 <div class="container mx-auto">
     <div class="flex h-screen items-center justify-center gap-4">
 

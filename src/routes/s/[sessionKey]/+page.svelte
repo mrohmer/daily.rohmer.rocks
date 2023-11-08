@@ -163,6 +163,10 @@
   $: canEdit = !!data.session?.user?.id
 </script>
 
+<svelte:head>
+    <title>{data.daily?.title ?? ''} | Daily Checklist</title>
+</svelte:head>
+
 <Navbar backLink="/">
     {#if data.daily}
         <Title bind:title={data.daily.title} {canEdit} on:change={onChangeTitle()}/>
