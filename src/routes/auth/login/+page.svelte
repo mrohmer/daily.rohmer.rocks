@@ -2,8 +2,12 @@
   import {ThemeSupa} from "@supabase/auth-ui-shared";
   import {Auth} from "@supabase/auth-ui-svelte";
   import type {PageData} from './$types';
+  import {browser} from '$app/environment';
 
   export let data: PageData;
+
+  $: clientUrl = browser ? `${window.location.protocol}//${window.location.host}` : undefined;
+  $: url = clientUrl ?? data?.url;
 </script>
 
 <div class="container mx-auto">
@@ -16,7 +20,7 @@
                             <Auth
                                     supabaseClient={data.supabase}
                                     view="magic_link"
-                                    redirectTo={`${data.url}/auth/callback`}
+                                    redirectTo={`${url}/auth/callback`}
                                     showLinks={false}
                                     appearance={{ theme: ThemeSupa, style: { input: 'color: #fff' } }}
                             />
