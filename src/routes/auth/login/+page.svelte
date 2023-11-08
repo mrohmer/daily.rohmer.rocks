@@ -3,7 +3,7 @@
   import {Auth} from "@supabase/auth-ui-svelte";
   import type {PageData} from './$types';
 
-  export let data: PageData
+  export let data: PageData;
 </script>
 
 <div class="container mx-auto">
