@@ -1,6 +1,4 @@
 <script lang="ts">
-  import {Auth} from '@supabase/auth-ui-svelte'
-  import {ThemeSupa} from '@supabase/auth-ui-shared'
   import {goto} from '$app/navigation';
   import {v4 as uuid} from 'uuid';
 
@@ -25,26 +23,12 @@
 
   const onCreateSessionClick = () => async () => {
     const session = await createSession();
-    console.log(session);
     await goToSession(session.id);
   }
 </script>
 
 <div class="container mx-auto">
     <div class="flex h-screen items-center justify-center gap-4">
-        {#if !data?.session}
-            <div class="row flex-center flex">
-                <div class="col-6 form-widget">
-                    <Auth
-                            supabaseClient={data.supabase}
-                            view="magic_link"
-                            redirectTo={`${data.url}/auth/callback`}
-                            showLinks={false}
-                            appearance={{ theme: ThemeSupa, style: { input: 'color: #fff' } }}
-                    />
-                </div>
-            </div>
-        {/if}
 
         <div class="card w-96 bg-base-100 border-primary border shadow shadow-primary">
             <div class="card-body">
@@ -57,9 +41,11 @@
                     </div>
                     <button class="btn btn-primary">Join</button>
                 </div>
+                <div class="divider">OR</div>
                 {#if data?.session}
-                    <div class="divider">OR</div>
                     <button class="btn btn-primary" on:click={onCreateSessionClick()}>Create Session</button>
+                {:else }
+                    <a href="/auth/login" class="btn btn-primary">Login to Create Session</a>
                 {/if}
             </div>
         </div>
