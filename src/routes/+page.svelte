@@ -1,8 +1,9 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
   import {v4 as uuid} from 'uuid';
+  import type {PageData} from './$types';
 
-  export let data: any
+  export let data: PageData;
 
   const createSession = async () => {
     const {data: result, error} = await data.supabase
@@ -15,7 +16,7 @@
     if (error) {
       throw error;
     }
-    return result[0];
+    return result?.[0]!;
   }
 
   const goToSession = (id: string) =>
@@ -32,7 +33,7 @@
 </svelte:head>
 
 <div class="container mx-auto">
-    <div class="flex h-screen items-center justify-center gap-4">
+    <div class="flex min-h-screen items-center justify-center gap-4 flex-col py-5">
 
         <div class="card w-96 bg-base-100 border-primary border shadow shadow-primary">
             <div class="card-body">
@@ -53,5 +54,21 @@
                 {/if}
             </div>
         </div>
+        {#each data.dailies ?? [] as {id, title} (id)}
+            <a href="/s/{id}" class="card w-96 bg-base-100 border shadow hover:bg-base-300">
+                <div class="card-body py-4 pl-4 pr-2">
+                    <div class="flex gap-2 items-center">
+                        <div class="flex-1">
+                            {title ? title : id}
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {/each}
     </div>
 </div>
