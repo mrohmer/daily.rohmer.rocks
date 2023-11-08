@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({params, depends}) => {
     include: {
       participants: {
         orderBy: {
-          createdAt: 'asc'
+          name: 'asc'
         }
       },
     }

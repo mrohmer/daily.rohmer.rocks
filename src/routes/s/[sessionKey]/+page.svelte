@@ -170,7 +170,7 @@
 </Navbar>
 
 <div class="container mx-auto">
-    <div class="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 p-4">
+    <div class="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 p-4">
         {#if data.daily.participants?.length}
             {#each data.daily.participants as {id, name, checked} (id)}
                 {#if !deletedParticipants.includes(id)}

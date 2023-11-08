@@ -41,7 +41,7 @@
                 class:cursor-pointer={canCheck && !edit}
                 class:select-none={!edit}
 >
-    <div class="card-body justify-center" class:px-3={edit}>
+    <div class="card-body justify-center pb-2" class:px-3={edit}>
         {#if !edit}
             <div class="card-actions absolute inset-x-2 top-2">
                 <input type="checkbox" {checked} class="checkbox" {id} on:change|preventDefault={onCheckboxClick()}/>
@@ -64,7 +64,7 @@
             {#if loading}
                 <div class="loading loading-ball loading-md"></div>
             {:else }
-                <div class="text-3xl">
+                <div class="text-2xl md:text-3xl text-center">
                     {#if edit}
                         <input type="text" bind:value placeholder="Participant"
                                class="input input-ghost w-full max-w-xs"/>
