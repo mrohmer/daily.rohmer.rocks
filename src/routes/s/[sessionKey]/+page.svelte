@@ -7,12 +7,18 @@
   import {onMount} from 'svelte';
   import Navbar from '$lib/components/Navbar.svelte';
   import Title from './_/components/Title.svelte';
+  import Absent from './_/components/Absent.svelte';
 
   export let data: PageData;
 
   let addedUsers = 0;
   let deletedParticipants = [];
 
+  const getNextDayMidnight = () => {
+    const date = new Date(+new Date() + ms('1d'));
+    date.setHours(1);
+    return date;
+  }
   const execInvalidate = async () => {
     if (addedUsers <= 1 && deletedParticipants?.length <= 1) {
       await invalidate(`daily:${data.daily.id}`)
@@ -49,6 +55,19 @@
     const {data: result, error} = await data.supabase
       .from('Participant')
       .update({checked: checked ? new Date() : null})
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      throw error;
+    }
+
+    return result?.[0];
+  }
+  const setAbsent = async (id: string, absent = getNextDayMidnight()) => {
+    const {data: result, error} = await data.supabase
+      .from('Participant')
+      .update({absent})
       .eq('id', id)
       .select();
 
@@ -112,6 +131,35 @@
       deletedParticipants = deletedParticipants.filter(p => p.id === id);
     }
   }
+  const onMakeAbsent = (id: string) => async () => {
+    try {
+      data.daily.participants = data.daily.participants.map(p => p.id === id ? {
+        ...p,
+        absent: getNextDayMidnight()
+      } : p)
+      await setAbsent(id);
+    } catch (e) {
+      data.daily.participants = data.daily.participants.map(p => p.id === id ? {
+        ...p,
+        absent: undefined,
+      } : p)
+      throw e;
+    }
+  }
+  const onChangeAbsent = (id: string, change: 1|-1) => async () => {
+    const participant = data.daily.participants.find(p => p.id === id);
+    const adjustedParticipant = {
+      ...participant,
+      absent: new Date(+participant.absent + (ms('1d') * change)),
+    };
+    try {
+      data.daily.participants = data.daily.participants.map(p => p.id === id ? adjustedParticipant : p)
+      await setAbsent(id, adjustedParticipant.absent);
+    } catch (e) {
+      data.daily.participants = data.daily.participants.map(p => p.id === id ? participant : p)
+      throw e;
+    }
+  }
 
   const subscribe = <T>(
     f: Record<'table' | 'filter' | 'event', string>,
@@ -160,7 +208,13 @@
     await changeTitle(data.daily.id, data.daily.title);
   }
 
-  $: canEdit = !!data.session?.user?.id
+  const isAbsent = (date: Date): boolean =>
+    !!date && Math.ceil((date - +new Date()) / ms('1d')) >= 1;
+
+  $: canEdit = !!data.session?.user?.id;
+
+  $: participants = data.daily?.participants?.filter(p => !deletedParticipants.includes(p.id) && !isAbsent(p.absent));
+  $: absentParticipants = data.daily?.participants?.filter(p => !deletedParticipants.includes(p.id) && isAbsent(p.absent));
 </script>
 
 <svelte:head>
@@ -173,18 +227,17 @@
     {/if}
 </Navbar>
 
-<div class="container mx-auto">
-    <div class="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 p-4">
-        {#if data.daily.participants?.length}
-            {#each data.daily.participants as {id, name, checked} (id)}
-                {#if !deletedParticipants.includes(id)}
-                    <Card canCheck={canEdit}
-                          canDelete={canEdit}
-                          checked={checked && checked - +new Date() < ms('22h')}
-                          on:check={onCheck(id)}
-                          on:delete={onDelete(id)}
-                    >{name}</Card>
-                {/if}
+<div class="container mx-auto p-4 flex flex-col gap-10">
+    <div class="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        {#if participants?.length}
+            {#each participants as {id, name, checked, absent} (id)}
+                <Card canCheck={canEdit}
+                      {canEdit}
+                      checked={checked && checked - +new Date() < ms('22h')}
+                      on:check={onCheck(id)}
+                      on:delete={onDelete(id)}
+                      on:absent={onMakeAbsent(id)}
+                >{name}</Card>
             {/each}
         {/if}
         {#each Array.from(Array(addedUsers)) as _, index (index)}
@@ -194,4 +247,22 @@
             <Card edit on:add={onAdd()}/>
         {/if}
     </div>
+
+    {#if absentParticipants?.length}
+        <div class="grid grid-cols-1  gap-4 justify-center opacity-75"
+             class:sm:grid-cols-2={!canEdit}
+             class:md:grid-cols-3={!canEdit}
+             class:md:grid-cols-2={canEdit}
+             class:lg:grid-cols-3={canEdit}
+        >
+            {#each absentParticipants as {id, name, absent} (id)}
+                <Absent {absent} {canEdit}
+                        on:increment={onChangeAbsent(id, 1)}
+                        on:decrement={onChangeAbsent(id, -1)}
+                >
+                    {name}
+                </Absent>
+            {/each}
+        </div>
+    {/if}
 </div>

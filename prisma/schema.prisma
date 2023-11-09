@@ -26,4 +26,5 @@ model Participant {
   session   Session  @relation(fields: [sessionId], references: [id])
 
   checked DateTime?
+  absent  DateTime?
 }
