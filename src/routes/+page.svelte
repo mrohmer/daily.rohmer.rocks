@@ -33,7 +33,7 @@
 </svelte:head>
 
 <div class="container mx-auto">
-    <div class="flex min-h-screen items-center justify-center gap-4 flex-col py-5">
+    <div class="flex full-height items-center justify-center gap-4 flex-col py-5">
 
         <div class="card w-96 bg-base-100 border-primary border shadow shadow-primary">
             <div class="card-body">

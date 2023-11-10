@@ -2,6 +2,7 @@
   import '../app.pcss'
   import {invalidate} from '$app/navigation'
   import {onMount} from 'svelte'
+  import Footer from '$lib/components/Footer.svelte';
 
   export let data
 
@@ -19,4 +20,8 @@
   })
 </script>
 
-<slot/>
+<div class="full-height">
+    <slot/>
+</div>
+
+<Footer />
