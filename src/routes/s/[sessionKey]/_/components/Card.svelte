@@ -35,7 +35,7 @@
   }
 </script>
 
-<div class:cursor-not-allowed={!canCheck}>
+<div class:cursor-not-allowed={!canCheck && !edit}>
     <svelte:element this={edit ? 'div' : 'label'}
                     class="card bg-base-100 border shadow transition-colors "
                     class:shadow-primary={checked}
@@ -44,7 +44,7 @@
                     class:border-neutral-600={!checked}
                     class:cursor-pointer={canCheck && !edit}
                     class:select-none={!edit}
-                    class:pointer-events-none={!canCheck}
+                    class:pointer-events-none={!canCheck && !edit}
     >
         <div class="card-body justify-center pb-2" class:px-3={edit}>
             {#if !edit}
