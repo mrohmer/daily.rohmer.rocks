@@ -9,7 +9,16 @@ const getDailies = (userid: string|undefined) => {
 
   return prisma.session.findMany({
     where: {
-      userid
+      OR: [
+        {userid},
+        {
+          users: {
+            some: {
+              userid
+            }
+          }
+        }
+      ]
     },
     orderBy: {
       createdAt: 'asc'
