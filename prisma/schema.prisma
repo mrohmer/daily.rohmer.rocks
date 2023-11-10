@@ -14,6 +14,7 @@ model Session {
   createdAt    DateTime      @default(now())
   title        String?
   participants Participant[]
+  users        SessionUser[]
 }
 
 model Participant {
@@ -27,4 +28,12 @@ model Participant {
 
   checked DateTime?
   absent  DateTime?
+}
+
+model SessionUser {
+  sessionid String  @db.Uuid
+  userid    String  @db.Uuid
+  session   Session @relation(fields: [sessionid], references: [id])
+
+  @@id([sessionid, userid])
 }
