@@ -5,6 +5,9 @@
 
   export let data: PageData;
 
+  let joinId: string;
+  let joining = false;
+
   const createSession = async () => {
     const {data: result, error} = await data.supabase
       .from('Session')
@@ -26,6 +29,14 @@
     const session = await createSession();
     await goToSession(session.id);
   }
+
+  const onSubmitJoin = () => async () => {
+    if (joining) {
+      return;
+    }
+    joining = true;
+    await goToSession(joinId);
+  }
 </script>
 
 <svelte:head>
@@ -37,15 +48,22 @@
 
         <div class="card w-96 bg-base-100 border-primary border shadow shadow-primary">
             <div class="card-body">
-                <div class="flex gap-2 items-end">
+                <form class="flex gap-2 items-end" on:submit|preventDefault={onSubmitJoin()}>
                     <div class="form-control flex-1">
                         <label class="label">
                             <span class="label-text text-xs">Session ID</span>
                         </label>
-                        <input type="text" placeholder="Type here" class="input input-bordered w-full"/>
+                        <input type="text" placeholder="Type here" class="input input-bordered w-full"
+                               bind:value={joinId}/>
                     </div>
-                    <button class="btn btn-primary">Join</button>
-                </div>
+                    <button class="btn btn-primary" type="submit">
+                        {#if joining}
+                            <span class="loading loading-spinner"></span>
+                        {:else }
+                            Join
+                        {/if}
+                    </button>
+                </form>
                 <div class="divider">OR</div>
                 {#if data?.session}
                     <button class="btn btn-primary" on:click={onCreateSessionClick()}>Create Session</button>
@@ -62,8 +80,9 @@
                             {title ? title : id}
                         </div>
                         <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                 stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
                             </svg>
                         </div>
                     </div>
