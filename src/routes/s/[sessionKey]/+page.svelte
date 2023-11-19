@@ -233,7 +233,7 @@
             {#each participants as {id, name, checked, absent} (id)}
                 <Card canCheck={canEdit}
                       {canEdit}
-                      checked={checked && checked - +new Date() < ms('22h')}
+                      checked={checked && Math.abs(+new Date(checked) - +new Date()) < ms('22h')}
                       on:check={onCheck(id)}
                       on:delete={onDelete(id)}
                       on:absent={onMakeAbsent(id)}
